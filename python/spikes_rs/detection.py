@@ -59,6 +59,12 @@ def spike_mask(
     if max_iters <= 0:
         msg = "max_iters must be positive"
         raise ValueError(msg)
+    dtype = image.dtype.newbyteorder("=")
+    if dtype not in (np.int32, np.float32):
+        dtype = np.float64
     return _spike_mask(
-        np.ascontiguousarray(image, dtype=np.float64), (rows, columns), sigma_upper, max_iters
+        np.ascontiguousarray(image, dtype=dtype),
+        (rows, columns),
+        sigma_upper,
+        max_iters,
     )

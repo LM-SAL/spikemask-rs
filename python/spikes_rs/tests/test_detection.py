@@ -49,7 +49,9 @@ def test_candidate_mask_preserves_data_and_leaves_missing_values_unflagged():
     assert data[12, 15] == 10000
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.float64, ">f4", ">f8", np.int16, np.uint32])
+@pytest.mark.parametrize(
+    "dtype", [np.float32, np.float64, ">f4", ">f8", np.int16, np.int32, ">i4", np.uint32]
+)
 def test_detector_layout_and_dtype(dtype):
     image = np.full((16, 24), 10, dtype=dtype)
     image[7, 13] = 10000
@@ -120,3 +122,9 @@ def test_ftoolss_parity():
         np.testing.assert_array_equal(
             spike_mask(image, window=window), np.isfinite(image) & np.isnan(clipped)
         )
+
+
+def test_int32_counts_resolve_a_single_dn_at_large_offsets():
+    image = np.full((13, 27), 2**27, dtype=np.int32)
+    image[6, 12] += 1
+    assert np.argwhere(spike_mask(image)).tolist() == [[6, 12]]

@@ -46,3 +46,11 @@ took 1.12 ms with 16 workers and 1.36 ms with the default worker count. All
 stock ``rsliding`` at revision ``68f28a8b`` took 28.7 ms with 32 workers and
 ``ftoolss`` 6.1.21 took 153 ms (medians of seven warm calls). Runtime depends on
 the window, image size, density of hits and CPU.
+
+Detector dtypes
+---------------
+
+The binding accepts native int32 and float32 exposures directly. It widens
+each sample into its mutable float64 clipping buffer in one pass; all int32
+counts, including single-DN differences above 2²⁴, are exactly representable.
+This also preserves the clipping decisions for float32 images near a threshold.

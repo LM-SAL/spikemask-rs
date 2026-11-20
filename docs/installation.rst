@@ -23,4 +23,4 @@ Rebuild the extension after editing Rust. Set the environment variable
 ``RAYON_NUM_THREADS`` before starting Python to control the Rust worker count.
 
 Time one saved exposure with ``python benchmarks/throughput.py exposure.npy``.
-The reported median includes conversion to float64 when the input needs it.
+The reported median includes preparing the clipping buffer and allocating the mask.
