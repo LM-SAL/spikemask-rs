@@ -19,18 +19,17 @@ The tests compare the mask with a complete NumPy rescan. In addition,
 ``ftoolss.sigma_clip``, which calls the C median and standard-deviation kernels.
 The comparison covers detector dtypes, both window orientations and successive passes.
 
-Default window
---------------
+Counting the cut
+----------------
 
 The cut needs only whether the median passes it. A larger sample leaves a smaller
 difference from the center pixel, so the median passes exactly when more than half
-of the samples do, and counting replaces sorting. The complete five-row,
-three-column window contains 15 samples, so eight successes are sufficient, and its
-fixed shape lets Rust evaluate adjacent columns together. An x86 CPU with AVX2 uses
-a runtime-selected implementation. Edges, missing samples and other window shapes
-are counted one pixel at a time. When exactly half of an even count passes, the
-detector averages the two middle samples;
-``an_even_window_split_by_the_cut_is_decided_by_its_median`` covers that case.
+of the samples do, and counting replaces sorting. Complete windows are tested for
+eight adjacent centers at once; an x86 CPU with AVX2 uses a runtime-selected
+implementation. Edges and windows with missing samples are counted one pixel at a
+time. When exactly half of an even count passes, the detector averages the two
+middle samples; ``an_even_window_split_by_the_cut_is_decided_by_its_median``
+covers that case.
 
 Later passes
 ------------
