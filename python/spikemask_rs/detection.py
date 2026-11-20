@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ._spikes_rs import spike_mask as _spike_mask
+from ._spikemask_rs import spike_mask as _spike_mask
 from ._workers import resolve_pool
 
 if TYPE_CHECKING:

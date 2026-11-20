@@ -14,7 +14,7 @@ Make sure to use full sentences with correct case and punctuation, for example:
 
 .. code-block:: rst
 
-    Added ``spikes_rs.spike_mask``, which flags candidate cosmic-ray hits in a detector image.
+    Added ``spikemask_rs.spike_mask``, which flags candidate cosmic-ray hits in a detector image.
 
 Name APIs as ``double-backtick`` literals, not Sphinx links, so that an entry still builds after the API it names is removed.
 Describe only what changed for users since the last release: a fix or change to something not yet released belongs in the fragment that added it, ``breaking`` and ``removal`` are only for released APIs, and tests, CI and other changes users never see need no entry.

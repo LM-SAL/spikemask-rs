@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 use rayon::{ThreadPool, ThreadPoolBuilder};
 use std::num::NonZeroUsize;
 
-#[pyclass(frozen, name = "_WorkerPool", module = "spikes_rs._spikes_rs")]
+#[pyclass(frozen, name = "_WorkerPool", module = "spikemask_rs._spikemask_rs")]
 pub(crate) struct WorkerPool(pub(crate) ThreadPool);
 
 #[pymethods]

@@ -9,7 +9,7 @@ from time import perf_counter_ns
 
 import numpy as np
 
-from spikes_rs import spike_mask
+from spikemask_rs import spike_mask
 
 
 def main() -> None:

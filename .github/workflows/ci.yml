@@ -85,7 +85,7 @@ jobs:
       - name: Install from the source distribution
         run: |
           python -m pip install dist/*.tar.gz
-          python -c "import spikes_rs; print(spikes_rs.__version__)"
+          python -c "import spikemask_rs; print(spikemask_rs.__version__)"
 
   test:
     needs: [core, dist_check]
@@ -123,7 +123,7 @@ jobs:
     with:
       sdist: true
       test_extras: "tests"
-      test_command: "pytest -p no:warnings --pyargs spikes_rs"
+      test_command: "pytest -p no:warnings --pyargs spikemask_rs"
       # The cp312 wheel is abi3: cibuildwheel builds it once and tests it on 3.13 to 3.15.
       # Free-threaded Python cannot load abi3, so each free-threaded version gets its own wheel.
       targets: |

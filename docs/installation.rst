@@ -15,7 +15,7 @@ Install the test and documentation tools and build the extension into the active
     python -m pip install maturin
     maturin develop --release --extras dev
     cargo test
-    pytest --pyargs spikes_rs
+    pytest --pyargs spikemask_rs
     sphinx-build -W docs docs/_build/html
     prek run --all-files
 

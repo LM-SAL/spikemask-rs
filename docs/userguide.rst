@@ -4,7 +4,7 @@ Flagging an exposure
 A flag identifies a suspected hit at the same row and column as the original measurement.
 
 >>> import numpy as np
->>> from spikes_rs import spike_mask
+>>> from spikemask_rs import spike_mask
 >>> image = np.full((20, 30), 100.0, dtype=np.float32)
 >>> image[10, 15] = 10_000
 >>> image[1, 1] = np.nan
@@ -24,12 +24,12 @@ statistics after excluding newly flagged pixels, which can reveal a weaker adjac
 Stage worker counts
 -------------------
 
-Pass a positive integer as ``workers=`` to :func:`~spikes_rs.spike_mask` for one call.
-For a stage with repeated calls, :func:`~spikes_rs.set_workers` lets them reuse one Rayon pool.
+Pass a positive integer as ``workers=`` to :func:`~spikemask_rs.spike_mask` for one call.
+For a stage with repeated calls, :func:`~spikemask_rs.set_workers` lets them reuse one Rayon pool.
 An explicit count overrides the stage setting for that call. For example, these calls
 use four workers and one worker respectively.
 
->>> from spikes_rs import set_workers
+>>> from spikemask_rs import set_workers
 >>> with set_workers(4):
 ...     mask = spike_mask(image)
 ...     single_worker_mask = spike_mask(image, workers=1)
