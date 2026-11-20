@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from ._spikes_rs import spike_mask as _spike_mask
+from ._workers import resolve_pool
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike, NDArray
@@ -25,6 +26,7 @@ def spike_mask(
     window: tuple[int, int] = (5, 3),
     sigma_upper: float = 2.65,
     max_iters: int = 10,
+    workers: int | None = None,
 ) -> NDArray[np.bool_]:
     """
     Flag candidate positive spikes in one two-dimensional exposure.
@@ -41,6 +43,9 @@ def spike_mask(
     max_iters : int, optional
         Maximum number of passes. Each pass excludes previously flagged pixels.
         By default 10.
+    workers : int, optional
+        Number of Rayon threads for this call. By default use the active
+        worker context or Rayon's default pool.
 
     Returns
     -------
@@ -67,4 +72,5 @@ def spike_mask(
         (rows, columns),
         sigma_upper,
         max_iters,
+        resolve_pool(workers),
     )

@@ -38,14 +38,27 @@ Both paths use the same detection rule.
 Measured throughput
 -------------------
 
-On a Ryzen 9 9950X, the default detector took 1.20 ms per 328 by 1,024 float32
-MUSE demo exposure using 16 Rayon workers. This is the median of 61 warm Python
-calls on Linux including input conversion and mask allocation. The float64 input
-took 1.12 ms with 16 workers and 1.36 ms with the default worker count. All
-2,103 flagged pixels matched the demo's ``ftoolss`` mask. On the same float64 image,
-stock ``rsliding`` at revision ``68f28a8b`` took 28.7 ms with 32 workers and
-``ftoolss`` 6.1.21 took 153 ms (medians of seven warm calls). Runtime depends on
-the window, image size, density of hits and CPU.
+On a Ryzen 9 9950X with a pool reused across 41 calls, the 328 by 1,024
+MUSE demo exposure took 5.09 ms with one worker and 1.15 ms with 16 workers
+(median, float32 input). Rounding that exposure to int32 gave 5.00 ms and
+1.08 ms respectively. Both masks matched ``ftoolss`` on the corresponding
+input. The timings include preparing the clipping buffer and allocating the mask.
+An earlier comparison on the float64 demo found 28.7 ms for stock ``rsliding``
+at revision ``68f28a8b`` with 32 workers and 153 ms for ``ftoolss`` 6.1.21
+(medians of seven warm calls). Runtime depends on the window, image size,
+density of hits and CPU.
+
+Worker pools
+------------
+
+A call with ``workers=n`` uses a local Rayon pool of that size.
+If the active pool already has that size, the call reuses it.
+``set_workers(n)`` creates one pool for a block of calls in the current Python
+context. The binding runs the parallel kernel inside the selected pool.
+Calls outside either setting use Rayon's default. Separate processes must enter
+their own context. The pool and context behavior are covered by the Rust
+worker-pool test and the Python worker tests.
+
 
 Detector dtypes
 ---------------

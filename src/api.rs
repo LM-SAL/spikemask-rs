@@ -3,6 +3,7 @@ use numpy::{PyArray1, PyArray2, PyArrayMethods, PyReadonlyArray2, PyUntypedArray
 use pyo3::{exceptions::PyValueError, prelude::*};
 
 use crate::detect::Detector;
+use crate::workers::{self, WorkerPool};
 
 #[derive(FromPyObject)]
 pub(crate) enum Exposure<'py> {
@@ -29,12 +30,14 @@ fn working_copy<T: numpy::Element + Copy + Into<f64>>(
 }
 
 #[pyfunction]
+#[pyo3(signature = (exposure, window, sigma_upper, max_iters, pool=None))]
 pub(crate) fn spike_mask<'py>(
     py: Python<'py>,
     exposure: Exposure<'py>,
     window: (usize, usize),
     sigma_upper: f64,
     max_iters: usize,
+    pool: Option<&WorkerPool>,
 ) -> PyResult<Bound<'py, PyArray2<bool>>> {
     if window.0.is_multiple_of(2) || window.1.is_multiple_of(2) {
         return Err(PyValueError::new_err(
@@ -60,6 +63,6 @@ pub(crate) fn spike_mask<'py>(
         window,
         sigma_upper,
     };
-    let mask = py.detach(move || detector.mask(image, max_iters));
+    let mask = py.detach(move || workers::run(pool, || detector.mask(image, max_iters)));
     PyArray1::from_vec(py, mask).reshape([height, width])
 }
