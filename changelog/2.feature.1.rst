@@ -1,1 +1,0 @@
-Added the ``workers`` option of ``spikes_rs.spike_mask`` and ``spikes_rs.set_workers``, which set the number of Rayon threads for one call and for a block of calls.
