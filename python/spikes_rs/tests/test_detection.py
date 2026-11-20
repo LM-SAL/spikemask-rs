@@ -23,7 +23,9 @@ def reference(image, window, sigma, passes):
     return mask
 
 
-@pytest.mark.parametrize("window", [(5, 3), (3, 5), (3, 3), (1, 9), (7, 1), (31, 33), (1, 1)])
+@pytest.mark.parametrize(
+    "window", [(7, 5), (5, 3), (3, 5), (3, 3), (1, 9), (7, 1), (31, 33), (1, 1)]
+)
 @pytest.mark.parametrize(("sigma", "passes"), [(2.65, 10), (1.75, 1), (0.9, 3)])
 def test_matches_a_full_rescan(window, sigma, passes):
     rng = np.random.default_rng(5)
@@ -49,7 +51,9 @@ def test_candidate_mask_preserves_data_and_leaves_missing_values_unflagged():
     assert data[12, 15] == 10000
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.float64, ">f4", ">f8", np.int16, np.uint32])
+@pytest.mark.parametrize(
+    "dtype", [np.float32, np.float64, ">f4", ">f8", np.int16, np.int32, ">i4", np.uint32]
+)
 def test_detector_layout_and_dtype(dtype):
     image = np.full((16, 24), 10, dtype=dtype)
     image[7, 13] = 10000
@@ -108,15 +112,7 @@ def test_independent_calls_from_threads():
             np.testing.assert_array_equal(parallel, serial)
 
 
-def test_ftoolss_parity():
-    ftoolss = pytest.importorskip("ftoolss")
-    image = np.random.default_rng(2026).normal(size=(65, 75))
-    image[::7, ::5] += 2.5
-    image[1, ::3] = np.nan
-    for window in [(5, 3), (3, 5)]:
-        clipped = ftoolss.sigma_clip(
-            image, window[::-1], sigma_lower=np.inf, sigma_upper=2.65, maxiters=10
-        )
-        np.testing.assert_array_equal(
-            spike_mask(image, window=window), np.isfinite(image) & np.isnan(clipped)
-        )
+def test_int32_counts_resolve_a_single_dn_at_large_offsets():
+    image = np.full((13, 27), 2**27, dtype=np.int32)
+    image[6, 12] += 1
+    assert np.argwhere(spike_mask(image)).tolist() == [[6, 12]]

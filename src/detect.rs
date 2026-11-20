@@ -40,49 +40,58 @@ impl Detector {
         let count = samples.len();
         let mean = samples.iter().sum::<f64>() / count as f64;
         let variance = samples.iter().map(|v| (v - mean) * (v - mean)).sum::<f64>() / count as f64;
+        let threshold = self.sigma_upper * variance.sqrt();
+        // The median passes the cut when over half the samples do; only an even split needs it.
+        let passing = 2 * samples.iter().filter(|&&v| value - v > threshold).count();
+        if passing != count {
+            return passing > count;
+        }
         let (left, middle, _) = samples.select_nth_unstable_by(count / 2, f64::total_cmp);
-        let median = if count.is_multiple_of(2) {
-            (left.iter().copied().fold(f64::NEG_INFINITY, f64::max) + *middle) / 2.
-        } else {
-            *middle
-        };
-        value - median > self.sigma_upper * variance.sqrt()
+        let median = (left.iter().copied().fold(f64::NEG_INFINITY, f64::max) + *middle) / 2.;
+        value - median > threshold
     }
 
-    // The fixed shape lets LLVM evaluate adjacent centers together.
+    // Visits each window offset once for LANES adjacent centers, which LLVM evaluates together.
+    #[inline(always)]
+    fn lanes(&self, image: &[f64], i: usize, mut visit: impl FnMut(&[f64])) {
+        let corner = i - self.window.0 / 2 * self.width - self.window.1 / 2;
+        for row in 0..self.window.0 {
+            for dx in 0..self.window.1 {
+                let start = corner + row * self.width + dx;
+                visit(&image[start..start + LANES]);
+            }
+        }
+    }
+
     #[inline(always)]
     fn interior(&self, image: &[f64], i: usize, hits: &mut Vec<usize>, scratch: &mut Vec<f64>) {
-        let mut samples = [[0.; LANES]; 15];
+        let count = self.window.0 * self.window.1;
         let mut sum = [0.; LANES];
-        for row in 0..5 {
-            let start = i - 2 * self.width - 1 + row * self.width;
-            for dx in 0..3 {
-                let s = &mut samples[3 * row + dx];
-                s.copy_from_slice(&image[start + dx..start + dx + LANES]);
-                for j in 0..LANES {
-                    sum[j] += s[j];
-                }
-            }
-        }
-        let mean = sum.map(|s| s / 15.);
-        let mut variance = [0.; LANES];
-        for sample in &samples {
+        self.lanes(image, i, |s| {
             for j in 0..LANES {
-                let delta = sample[j] - mean[j];
+                sum[j] += s[j];
+            }
+        });
+        let mean = sum.map(|s| s / count as f64);
+        let mut variance = [0.; LANES];
+        self.lanes(image, i, |s| {
+            for j in 0..LANES {
+                let delta = s[j] - mean[j];
                 variance[j] += delta * delta;
             }
-        }
-        let threshold = variance.map(|v| self.sigma_upper * (v / 15.).sqrt());
-        let mut above = [0u64; LANES];
-        // The eighth ordered sample is the median: eight passing comparisons give the same strict cut.
-        for sample in &samples {
+        });
+        let threshold = variance.map(|v| self.sigma_upper * (v / count as f64).sqrt());
+        let center = &image[i..i + LANES];
+        let mut passing = [0; LANES];
+        self.lanes(image, i, |s| {
             for j in 0..LANES {
-                above[j] += (samples[7][j] - sample[j] > threshold[j]) as u64;
+                passing[j] += (center[j] - s[j] > threshold[j]) as usize;
             }
-        }
+        });
         for j in 0..LANES {
+            // A complete window has an odd count, so there is no even split to settle.
             let hit = if sum[j].is_finite() {
-                above[j] >= 8
+                2 * passing[j] > count
             } else {
                 self.is_hit(image, i + j, scratch)
             };
@@ -95,20 +104,18 @@ impl Detector {
     #[inline(always)]
     fn row(&self, image: &[f64], y: usize, hits: &mut Vec<usize>, scratch: &mut Vec<f64>) {
         let start = y * self.width;
+        let (above, beside) = (self.window.0 / 2, self.window.1 / 2);
+        let complete_rows = y >= above && y + above < self.height;
         let mut x = 0;
-        if self.window == (5, 3) && y >= 2 && y + 2 < self.height && self.width >= LANES + 2 {
-            if self.is_hit(image, start, scratch) {
-                hits.push(start);
-            }
-            x = 1;
-            while x + LANES < self.width {
+        while x < self.width {
+            if complete_rows && x >= beside && x + LANES + beside <= self.width {
                 self.interior(image, start + x, hits, scratch);
                 x += LANES;
-            }
-        }
-        for col in x..self.width {
-            if self.is_hit(image, start + col, scratch) {
-                hits.push(start + col);
+            } else {
+                if self.is_hit(image, start + x, scratch) {
+                    hits.push(start + x);
+                }
+                x += 1;
             }
         }
     }
@@ -155,33 +162,29 @@ impl Detector {
             .0
             .min(self.height)
             .saturating_mul(self.window.1.min(self.width));
-        let visits = hits.len().saturating_mul(footprint);
-        if visits >= image.len() {
+        // Visiting that many neighbors costs more than testing every pixel once.
+        if hits.len().saturating_mul(footprint) >= image.len() {
             return self.scan(image);
         }
         // Only windows that overlap a newly masked sample can change on the next pass.
-        let mut candidates = Vec::with_capacity(visits);
-        for &i in hits {
-            let cols = self.columns(i % self.width);
-            for row in self.rows(i / self.width) {
-                let base = row * self.width;
-                candidates.extend(
-                    cols.clone()
-                        .map(|x| base + x)
-                        .filter(|&j| image[j].is_finite()),
-                );
-            }
-        }
-        candidates.sort_unstable();
-        candidates.dedup();
-        candidates
-            .into_par_iter()
-            .with_min_len(128)
-            .map_init(Vec::new, |scratch, i| {
-                self.is_hit(image, i, scratch).then_some(i)
+        let mut next: Vec<usize> = hits
+            .par_iter()
+            .with_min_len(16)
+            .map_init(Vec::new, |scratch, &i| {
+                let columns = self.columns(i % self.width);
+                self.rows(i / self.width)
+                    .flat_map(|row| {
+                        row * self.width + columns.start()..=row * self.width + columns.end()
+                    })
+                    .filter(|&j| self.is_hit(image, j, scratch))
+                    .collect::<Vec<_>>()
             })
-            .flatten()
-            .collect()
+            .flatten_iter()
+            .collect();
+        // Two masked samples can share a neighbor.
+        next.sort_unstable();
+        next.dedup();
+        next
     }
 
     pub(crate) fn mask(&self, mut image: Vec<f64>, max_iters: usize) -> Vec<bool> {

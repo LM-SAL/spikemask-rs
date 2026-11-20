@@ -19,12 +19,30 @@ requires-python = ">=3.12"
 dependencies = [
   "numpy>=2.0.0",
 ]
+keywords = [
+  "cosmic rays",
+  "detector",
+  "sigma clipping",
+  "solar physics",
+  "spikes",
+]
 classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3",
   "Programming Language :: Rust",
   "Topic :: Scientific/Engineering :: Astronomy",
   "Topic :: Scientific/Engineering :: Physics",
 ]
+
+[project.urls]
+# Add Documentation once Read the Docs hosts the docs.
+Source = "https://github.com/LM-SAL/spikes-rs"
+Issues = "https://github.com/LM-SAL/spikes-rs/issues"
+Changelog = "https://github.com/LM-SAL/spikes-rs/blob/main/CHANGELOG.rst"
 
 [project.optional-dependencies]
 docs = [

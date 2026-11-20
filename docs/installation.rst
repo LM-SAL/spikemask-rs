@@ -19,8 +19,8 @@ Install the test and documentation tools and build the extension into the active
     sphinx-build -W docs docs/_build/html
     prek run --all-files
 
-Rebuild the extension after editing Rust. Set the environment variable
-``RAYON_NUM_THREADS`` before starting Python to control the Rust worker count.
+Rebuild the extension after editing Rust. Run ``tox -e py314-cparity`` with Python 3.14
+to install the pinned ``ftoolss`` reference and compare the spike masks pixel by pixel.
 
 Time one saved exposure with ``python benchmarks/throughput.py exposure.npy``.
-The reported median includes conversion to float64 when the input needs it.
+The reported median includes preparing the clipping buffer and allocating the mask.
