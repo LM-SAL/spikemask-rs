@@ -19,6 +19,22 @@ fn a_nearby_spike_appears_on_the_second_pass() {
 }
 
 #[test]
+fn an_even_window_split_by_the_cut_is_decided_by_its_median() {
+    // Of the samples 0 and 4, only 0 passes the cut for the 4; their median is 2 and sigma is 2.
+    let flagged = |sigma_upper| {
+        let detector = Detector {
+            width: 2,
+            height: 1,
+            window: (1, 3),
+            sigma_upper,
+        };
+        detector.mask(vec![0., 4.], 1)
+    };
+    assert_eq!(flagged(0.9), [false, true]);
+    assert_eq!(flagged(1.1), [false, false]);
+}
+
+#[test]
 fn rows_use_the_declared_window_and_skip_missing_neighbors() {
     let detector = Detector {
         width: 11,

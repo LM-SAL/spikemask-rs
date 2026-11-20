@@ -22,20 +22,22 @@ The comparison covers detector dtypes, both window orientations and successive p
 Default window
 --------------
 
-The complete five-row, three-column window contains 15 samples. Its median is the
-eighth ordered value. Exactly the same upper cut can be evaluated by comparing
-the center pixel with all 15 samples and counting how often the difference exceeds
-the cut. Eight successes are sufficient. This lets Rust evaluate adjacent columns
-together. An x86 CPU with AVX2 uses a runtime-selected implementation. Edges,
-missing samples and other window shapes use the median of the available samples
-directly, averaging the two middle values when the count is even.
+The cut needs only whether the median passes it. A larger sample leaves a smaller
+difference from the center pixel, so the median passes exactly when more than half
+of the samples do, and counting replaces sorting. The complete five-row,
+three-column window contains 15 samples, so eight successes are sufficient, and its
+fixed shape lets Rust evaluate adjacent columns together. An x86 CPU with AVX2 uses
+a runtime-selected implementation. Edges, missing samples and other window shapes
+are counted one pixel at a time. When exactly half of an even count passes, the
+detector averages the two middle samples;
+``an_even_window_split_by_the_cut_is_decided_by_its_median`` covers that case.
 
 Later passes
 ------------
 
-Only windows that overlap a newly flagged sample need another visit. For sparse hits
-the detector collects these candidate pixels and removes duplicates. When that list
-could be as large as the image, scanning the image again bounds temporary storage.
+Only windows that overlap a newly flagged sample can change, so each pass retests
+the neighbors of the new hits and keeps a flag found twice once. When those
+neighborhoods hold as many pixels as the image, the image is scanned again instead.
 Both paths use the same detection rule.
 
 Measured throughput
