@@ -4,9 +4,9 @@ from threading import Barrier
 import numpy as np
 import pytest
 
-from spikes_rs import detection as api
-from spikes_rs import set_workers
-from spikes_rs._workers import resolve_pool
+from spikemask_rs import detection as api
+from spikemask_rs import set_workers
+from spikemask_rs._workers import resolve_pool
 
 
 def run(dtype, **options):

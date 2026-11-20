@@ -5,7 +5,7 @@ Compare the public mask with the C-backed clipping kernels in ftoolss.
 import numpy as np
 import pytest
 
-from spikes_rs import spike_mask
+from spikemask_rs import spike_mask
 
 ftoolss = pytest.importorskip("ftoolss", exc_type=ModuleNotFoundError)
 

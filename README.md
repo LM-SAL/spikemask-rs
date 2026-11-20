@@ -1,9 +1,9 @@
-# spikes-rs
+# spikemask-rs
 
 Detect candidate cosmic-ray hits in a two-dimensional detector exposure using local upper sigma clipping. The Python function returns a Boolean mask and preserves every measured value.
 
 ```python
-from spikes_rs import spike_mask
+from spikemask_rs import spike_mask
 
 suspected_hits = spike_mask(exposure, window=(7, 5), sigma_upper=3.0, max_iters=10)
 ```

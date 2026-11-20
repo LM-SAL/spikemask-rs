@@ -1,13 +1,13 @@
 """
-Sphinx configuration for spikes-rs.
+Sphinx configuration for spikemask-rs.
 """
 
 from importlib.metadata import version
 
-project = "spikes-rs"
+project = "spikemask-rs"
 author = "LMSAL"
 copyright = "2026, LMSAL"  # noqa: A001
-version = release = version("spikes-rs")
+version = release = version("spikemask-rs")
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
@@ -41,4 +41,4 @@ intersphinx_mapping = {
 copybutton_prompt_text = r">>> |\.\.\. "
 copybutton_prompt_is_regexp = True
 html_theme = "furo"
-html_title = "spikes-rs"
+html_title = "spikemask-rs"

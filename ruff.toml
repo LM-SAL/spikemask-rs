@@ -20,7 +20,7 @@ ignore = [
 "*/tests/*"    = ["ANN", "D1", "PLR", "S101"]  # annotations, docstrings, magic numbers, assert — not required in tests
 
 [lint.isort]
-known-first-party = ["spikes_rs"]
+known-first-party = ["spikemask_rs"]
 
 [format]
 quote-style = "double"

@@ -9,7 +9,7 @@ mod tests;
 use pyo3::prelude::*;
 
 #[pymodule(gil_used = false)]
-fn _spikes_rs(module: &Bound<'_, PyModule>) -> PyResult<()> {
+fn _spikemask_rs(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<workers::WorkerPool>()?;
     module.add_function(wrap_pyfunction!(api::spike_mask, module)?)?;
     Ok(())

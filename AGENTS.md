@@ -56,7 +56,7 @@ An agent proposes these and lists them under **Needs a person**; a person makes 
 - anything that deletes or overwrites data
 - releases: tags, publishing and release metadata
 
-## spikes-rs
+## spikemask-rs
 
 - Use `gh` for a GitHub remote. Pull requests are merged with a merge commit and keep every commit, so a later fix, style or lint change to work already committed goes into that commit: `git commit --fixup <commit>`, then `git rebase --autosquash main`.
 - Fragments are `changelog/<PR>.<type>.rst`, with a counter for several of one type (`123.feature.1.rst`).

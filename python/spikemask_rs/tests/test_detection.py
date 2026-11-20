@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import pytest
 
-from spikes_rs import spike_mask
+from spikemask_rs import spike_mask
 
 
 def reference(image, window, sigma, passes):

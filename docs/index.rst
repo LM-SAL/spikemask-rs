@@ -1,5 +1,5 @@
-spikes-rs
-=========
+spikemask-rs
+============
 
 Identify candidate cosmic-ray hits while preserving the original exposure.
 

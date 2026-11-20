@@ -11,12 +11,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ._spikes_rs import _WorkerPool
+from ._spikemask_rs import _WorkerPool
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-_active: ContextVar[_WorkerPool | None] = ContextVar("spikes_rs_pool", default=None)
+_active: ContextVar[_WorkerPool | None] = ContextVar("spikemask_rs_pool", default=None)
 
 
 def _pool_for_count(workers: int) -> _WorkerPool:
