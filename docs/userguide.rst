@@ -17,6 +17,7 @@ A flag identifies a suspected hit at the same row and column as the original mea
 Use ``window=(rows, columns)`` to change the local neighborhood. Both sizes must be
 positive and odd. Edges use only the available pixels. Each pass recomputes local
 statistics after excluding newly flagged pixels, which can reveal a weaker adjacent hit.
+``window=(5, 3)`` and ``sigma_upper=2.65`` reproduce the MUSE IDL demo.
 
 .. _stage-worker-counts:
 

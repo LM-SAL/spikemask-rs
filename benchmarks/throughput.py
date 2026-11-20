@@ -18,7 +18,7 @@ def main() -> None:
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("image", type=Path, help="detector image saved with np.save")
-    parser.add_argument("--window", type=int, nargs=2, default=(5, 3), metavar=("ROWS", "COLS"))
+    parser.add_argument("--window", type=int, nargs=2, default=(7, 5), metavar=("ROWS", "COLS"))
     args = parser.parse_args()
     image = np.load(args.image, allow_pickle=False)
     expected = spike_mask(image, window=args.window)

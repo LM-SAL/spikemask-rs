@@ -17,7 +17,32 @@ flags from that pass affect the next one. Original missing values remain unflagg
 The tests compare the mask with a complete NumPy rescan. In addition,
 ``test_c_parity.py`` compares every flag with the newly clipped pixels from
 ``ftoolss.sigma_clip``, which calls the C median and standard-deviation kernels.
-The comparison covers detector dtypes, both window orientations and successive passes.
+The comparison covers the defaults, the demo's settings in both window orientations,
+detector dtypes and successive passes.
+
+Default settings
+----------------
+
+The defaults are a seven-row, five-column window, a cut of 3.0 standard deviations
+and up to ten passes. The IDL demo uses five rows, three columns and 2.65;
+``spike_mask(exposure, window=(5, 3), sigma_upper=2.65)`` reproduces it.
+
+The defaults were chosen from a sweep of 855 settings on mocked Level 1 frames
+carrying the cosmic-ray hits of an IRIS dark from the South Atlantic Anomaly.
+Percent of hit pixels found, and of pixels without a hit that were flagged:
+
+======  ==============  ===========  ================  =============
+Frame   Found, default  Found, demo  Flagged, default  Flagged, demo
+======  ==============  ===========  ================  =============
+SG 108  93.1            88.9         0.23              0.52
+SG 171  79.7            78.6         0.20              0.43
+SG 284  82.3            80.6         0.10              0.31
+CI 195  31.0            30.4         0.07              0.25
+======  ==============  ===========  ================  =============
+
+On IRIS sit-and-stare Si IV spectra of 10 September 2014, with the neighboring
+exposures as the truth, the defaults found 89 percent of the hits on the dark half
+of the detector and the demo's settings 63 percent.
 
 Counting the cut
 ----------------

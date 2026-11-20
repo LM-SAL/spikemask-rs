@@ -23,7 +23,9 @@ def reference(image, window, sigma, passes):
     return mask
 
 
-@pytest.mark.parametrize("window", [(5, 3), (3, 5), (3, 3), (1, 9), (7, 1), (31, 33), (1, 1)])
+@pytest.mark.parametrize(
+    "window", [(7, 5), (5, 3), (3, 5), (3, 3), (1, 9), (7, 1), (31, 33), (1, 1)]
+)
 @pytest.mark.parametrize(("sigma", "passes"), [(2.65, 10), (1.75, 1), (0.9, 3)])
 def test_matches_a_full_rescan(window, sigma, passes):
     rng = np.random.default_rng(5)
