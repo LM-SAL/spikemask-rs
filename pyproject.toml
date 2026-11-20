@@ -42,7 +42,7 @@ classifiers = [
 Documentation = "https://spikemask-rs.readthedocs.io"
 Source = "https://github.com/LM-SAL/spikemask-rs"
 Issues = "https://github.com/LM-SAL/spikemask-rs/issues"
-Changelog = "https://github.com/LM-SAL/spikemask-rs/blob/main/CHANGELOG.rst"
+Changelog = "https://spikemask-rs.readthedocs.io/en/latest/changelog.html"
 
 [project.optional-dependencies]
 docs = [
