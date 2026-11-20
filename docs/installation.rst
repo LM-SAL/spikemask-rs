@@ -1,11 +1,15 @@
 Installation
 ============
 
-From the project root, build and install the Python extension with::
+Install the released package with::
+
+    python -m pip install spikemask-rs
+
+Python needs version 3.12 or later and NumPy 2.0 or later. Wheels cover Linux (glibc) on x86_64
+and aarch64, macOS on Apple silicon and Windows on x86_64; elsewhere pip builds from source, which
+needs Rust 1.99 or later. To build from a checkout, run from the project root::
 
     python -m pip install .
-
-Source builds need Rust 1.99 or later. Python needs version 3.12 or later and NumPy 2.0 or later.
 
 Development
 -----------

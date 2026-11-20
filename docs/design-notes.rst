@@ -57,7 +57,9 @@ eight adjacent centers at once; an x86 CPU with AVX2 uses a runtime-selected
 implementation. Edges and windows with missing samples are counted one pixel at a
 time. When exactly half of an even count passes, the detector averages the two
 middle samples; ``an_even_window_split_by_the_cut_is_decided_by_its_median``
-covers that case.
+covers that case. The rule is ``Detector::is_hit`` in ``src/detect.rs`` and its
+vector form ``Detector::interior``; ``test_matches_a_full_rescan`` compares both
+with NumPy for eight window shapes.
 
 Later passes
 ------------
@@ -65,7 +67,8 @@ Later passes
 Only windows that overlap a newly flagged sample can change, so each pass retests
 the neighbors of the new hits and keeps a flag found twice once. When those
 neighborhoods hold as many pixels as the image, the image is scanned again instead.
-Both paths use the same detection rule.
+Both paths use the same detection rule. This is ``Detector::rescan``, covered by
+``a_nearby_spike_appears_on_the_second_pass`` and ``test_matches_a_full_rescan``.
 
 Measured throughput
 -------------------
