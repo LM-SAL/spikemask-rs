@@ -1,0 +1,22 @@
+[package]
+name = "spikes-rs"
+version = "0.1.0-dev.0"
+edition = "2021"
+rust-version = "1.99"
+description = "Detect candidate cosmic-ray spikes in two-dimensional detector exposures"
+license = "BSD-3-Clause"
+readme = "README.md"
+
+[lib]
+name = "spikes_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+numpy = "0.30"
+pyo3 = { version = "0.30", features = ["extension-module", "abi3-py312"] }
+rayon = "1"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = "symbols"

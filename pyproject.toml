@@ -1,0 +1,116 @@
+[build-system]
+requires = [
+  "maturin>=1.8,<2.0",
+]
+build-backend = "maturin"
+
+[project]
+name = "spikes-rs"
+# The version lives in Cargo.toml only; maturin reads it from there.
+dynamic = ["version"]
+description = "Detect candidate cosmic-ray spikes in two-dimensional detector exposures"
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Nabil Freij", email = "nabil.freij@gmail.com" },
+]
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=2.0.0",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Rust",
+  "Topic :: Scientific/Engineering :: Astronomy",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+
+[project.optional-dependencies]
+docs = [
+  "sphinx>=8",
+  "furo",
+  "sphinx-copybutton",
+]
+tests = [
+  "pytest",
+  "pytest-doctestplus>=1.0.0",
+]
+dev = [
+  "spikes-rs[tests,docs]",
+]
+
+[tool.maturin]
+python-source = "python"
+module-name = "spikes_rs._spikes_rs"
+exclude = [
+  "benchmarks/**",
+  ".github/**",
+  "changelog/**",
+  "docs/**",
+  ".readthedocs.yaml",
+  ".gitignore",
+  ".pre-commit-config.yaml",
+  "rustfmt.toml",
+  "ruff.toml",
+  "tox.ini",
+  "pytest.ini",
+  "AGENTS.md",
+]
+
+[tool.cibuildwheel]
+build-frontend = "build"
+skip = ["*-win32", "*-manylinux_i686"]
+test-extras = ["tests"]
+test-command = "pytest --pyargs spikes_rs"
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 100
+wrap-descriptions = 100
+pre-summary-newline = true
+close-quotes-on-newline = true
+make-summary-multi-line = true
+black = true
+
+[tool.towncrier]
+package = "spikes_rs"
+filename = "CHANGELOG.rst"
+directory = "changelog/"
+issue_format = "#{issue}"
+title_format = "{version} ({project_date})"
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking Changes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecation"
+name = "Deprecations"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "New Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bug Fixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "trivial"
+name = "Internal Changes"
+showcontent = true
