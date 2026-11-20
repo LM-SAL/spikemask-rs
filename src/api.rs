@@ -19,7 +19,6 @@ fn working_copy<T: numpy::Element + Copy + Into<f64>>(
         return Err(PyValueError::new_err("exposure must be C-contiguous"));
     }
     let shape = [exposure.shape()[0], exposure.shape()[1]];
-    // Fill the mutable clipping buffer directly from the detector's native dtype.
     let image = exposure
         .as_slice()?
         .iter()

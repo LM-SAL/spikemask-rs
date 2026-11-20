@@ -11,7 +11,7 @@ ftoolss = pytest.importorskip("ftoolss", exc_type=ModuleNotFoundError)
 
 
 def ftoolss_mask(image, window, sigma_upper, max_iters):
-    # ftoolss writes NaNs, so integer counts need a floating type that represents every int32.
+    # float64 can hold both the NaNs written by ftoolss and every int32 count.
     data = image.astype(np.float64) if image.dtype == np.int32 else image
     clipped = ftoolss.sigma_clip(
         data,
@@ -24,7 +24,6 @@ def ftoolss_mask(image, window, sigma_upper, max_iters):
 
 
 @pytest.mark.parametrize("dtype", [np.int32, np.float32, np.float64])
-# The defaults, then the settings of the MUSE IDL demo in both orientations.
 @pytest.mark.parametrize(("window", "sigma_upper"), [((7, 5), 3.0), ((5, 3), 2.65), ((3, 5), 2.65)])
 @pytest.mark.parametrize("max_iters", [1, 10])
 @pytest.mark.parametrize("workers", [1, 4])
@@ -50,6 +49,6 @@ def test_mask_matches_ftoolss(dtype, window, sigma_upper, max_iters, workers):
 def test_int32_single_count_above_float32_precision_matches_ftoolss():
     image = np.full((13, 27), 2**27, dtype=np.int32)
     image[6, 12] += 1
-    expected = ftoolss_mask(image, (7, 5), 3.0, 10)  # The defaults of spike_mask.
+    expected = ftoolss_mask(image, (7, 5), 3.0, 10)
     assert np.argwhere(expected).tolist() == [[6, 12]]
     np.testing.assert_array_equal(spike_mask(image), expected, strict=True)

@@ -41,7 +41,7 @@ impl Detector {
         let mean = samples.iter().sum::<f64>() / count as f64;
         let variance = samples.iter().map(|v| (v - mean) * (v - mean)).sum::<f64>() / count as f64;
         let threshold = self.sigma_upper * variance.sqrt();
-        // The median passes the cut when over half the samples do; only an even split needs it.
+        // A majority settles the median test. Only a tie needs the two middle samples.
         let passing = 2 * samples.iter().filter(|&&v| value - v > threshold).count();
         if passing != count {
             return passing > count;
@@ -51,7 +51,7 @@ impl Detector {
         value - median > threshold
     }
 
-    // Visits each window offset once for LANES adjacent centers, which LLVM evaluates together.
+    // Adjacent centers read contiguous samples so LLVM can vectorize the window calculations.
     #[inline(always)]
     fn lanes(&self, image: &[f64], i: usize, mut visit: impl FnMut(&[f64])) {
         let corner = i - self.window.0 / 2 * self.width - self.window.1 / 2;
@@ -162,7 +162,7 @@ impl Detector {
             .0
             .min(self.height)
             .saturating_mul(self.window.1.min(self.width));
-        // Visiting that many neighbors costs more than testing every pixel once.
+        // Overlapping neighborhoods count separately toward the cost of a local rescan.
         if hits.len().saturating_mul(footprint) >= image.len() {
             return self.scan(image);
         }

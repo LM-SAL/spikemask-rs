@@ -22,7 +22,7 @@ fn a_nearby_spike_appears_on_the_second_pass() {
 
 #[test]
 fn an_even_window_split_by_the_cut_is_decided_by_its_median() {
-    // Of the samples 0 and 4, only 0 passes the cut for the 4; their median is 2 and sigma is 2.
+    // The samples [0, 4] have median 2 and standard deviation 2, so 4 is one sigma high.
     let flagged = |sigma_upper| {
         let detector = Detector {
             width: 2,

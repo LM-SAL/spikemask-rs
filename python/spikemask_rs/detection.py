@@ -20,7 +20,6 @@ __all__ = ["spike_mask"]
 _DETECTOR_NDIM = 2
 
 
-# Defaults measured on mocked MUSE frames (design notes); the IDL demo uses (5, 3) and 2.65.
 def spike_mask(
     exposure: ArrayLike,
     *,
@@ -37,13 +36,13 @@ def spike_mask(
     exposure : array_like
         Real-valued detector image. Nonfinite samples are ignored.
     window : tuple of int, optional
-        Odd, positive sizes in (rows, columns) order. By default (7, 5).
+        Positive odd sizes in ``(rows, columns)`` order. Edge windows use only
+        the available pixels.
     sigma_upper : float, optional
-        Flag a pixel when it exceeds the local median by more than this many
-        population standard deviations. By default 3.0.
+        Flag pixels more than this many population standard deviations above
+        the local median.
     max_iters : int, optional
         Maximum number of passes. Each pass excludes previously flagged pixels.
-        By default 10.
     workers : int, optional
         Number of Rayon threads for this call. By default use the active
         worker context or Rayon's default pool.
@@ -51,7 +50,7 @@ def spike_mask(
     Returns
     -------
     mask : numpy.ndarray
-        Boolean array with the shape of the exposure and True at suspected spikes.
+        Boolean array with the shape of the exposure and ``True`` at suspected spikes.
     """
     image = np.asarray(exposure)
     if image.ndim != _DETECTOR_NDIM or image.dtype.kind not in "iuf":
