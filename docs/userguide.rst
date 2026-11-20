@@ -37,7 +37,8 @@ use four workers and one worker respectively.
 
 Leaving the block restores the previous setting. Each package manages its own pool.
 If stages run concurrently, budget workers across the active pools. For a stage running
-in another process, enter the context in that process.
+in another process, enter the context in that process. Start it with ``spawn`` or
+``forkserver``: a call in a process forked after the first call never returns.
 
 With ``workers=None`` (the default), a call uses the active context or falls back to
 Rayon's default pool. Set ``RAYON_NUM_THREADS`` before starting Python to configure

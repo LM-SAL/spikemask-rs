@@ -18,7 +18,10 @@ The tests compare the mask with a complete NumPy rescan. In addition,
 ``test_c_parity.py`` compares every flag with the newly clipped pixels from
 ``ftoolss.sigma_clip``, which calls the C median and standard-deviation kernels.
 The comparison covers the defaults, the demo's settings in both window orientations,
-detector dtypes and successive passes.
+detector dtypes and successive passes. Two differences are known: infinite samples
+are ignored here like NaN, while ``ftoolss`` keeps them in its statistics; and an
+``ftoolss`` compiled with fused multiply-add (``-march=native``) can differ by a pixel
+that lies exactly on the cut.
 
 Default settings
 ----------------
