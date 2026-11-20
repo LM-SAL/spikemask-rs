@@ -1,4 +1,6 @@
 use crate::detect::Detector;
+use crate::workers::{run, WorkerPool};
+use rayon::ThreadPoolBuilder;
 
 #[test]
 fn a_nearby_spike_appears_on_the_second_pass() {
@@ -53,4 +55,12 @@ fn rows_use_the_declared_window_and_skip_missing_neighbors() {
             .count(),
         1
     );
+}
+
+#[test]
+fn the_kernel_inherits_the_selected_pool() {
+    let pool = WorkerPool(ThreadPoolBuilder::new().num_threads(2).build().unwrap());
+    assert_eq!(run(Some(&pool), rayon::current_num_threads), 2);
+    pool.0
+        .install(|| assert_eq!(run(None, rayon::current_num_threads), 2));
 }
