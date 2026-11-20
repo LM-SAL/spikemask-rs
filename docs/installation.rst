@@ -19,8 +19,8 @@ Install the test and documentation tools and build the extension into the active
     sphinx-build -W docs docs/_build/html
     prek run --all-files
 
-Rebuild the extension after editing Rust. Use ``set_workers(n)`` around a stage to reuse its Rayon pool.
-The environment variable ``RAYON_NUM_THREADS`` sets the size of the default pool at startup.
+Rebuild the extension after editing Rust. Run ``tox -e py314-cparity`` with Python 3.14
+to install the pinned ``ftoolss`` reference and compare the spike masks pixel by pixel.
 
 Time one saved exposure with ``python benchmarks/throughput.py exposure.npy``.
 The reported median includes preparing the clipping buffer and allocating the mask.

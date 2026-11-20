@@ -54,6 +54,7 @@ jobs:
       envs: |
         - linux: py315
         - linux: py312
+        - linux: py314-cparity
         - linux: codestyle
 
   dist_check:

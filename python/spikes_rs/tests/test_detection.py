@@ -110,20 +110,6 @@ def test_independent_calls_from_threads():
             np.testing.assert_array_equal(parallel, serial)
 
 
-def test_ftoolss_parity():
-    ftoolss = pytest.importorskip("ftoolss")
-    image = np.random.default_rng(2026).normal(size=(65, 75))
-    image[::7, ::5] += 2.5
-    image[1, ::3] = np.nan
-    for window in [(5, 3), (3, 5)]:
-        clipped = ftoolss.sigma_clip(
-            image, window[::-1], sigma_lower=np.inf, sigma_upper=2.65, maxiters=10
-        )
-        np.testing.assert_array_equal(
-            spike_mask(image, window=window), np.isfinite(image) & np.isnan(clipped)
-        )
-
-
 def test_int32_counts_resolve_a_single_dn_at_large_offsets():
     image = np.full((13, 27), 2**27, dtype=np.int32)
     image[6, 12] += 1

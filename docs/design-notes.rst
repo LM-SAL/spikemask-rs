@@ -14,7 +14,10 @@ The median and the population standard deviation use the same finite samples,
 including the tested pixel. Standard deviation is calculated around the mean in two
 passes. The strict upper cut is applied simultaneously across the image before any
 flags from that pass affect the next one. Original missing values remain unflagged.
-The Python parity tests compare the output with a complete rescan using NumPy.
+The tests compare the mask with a complete NumPy rescan. In addition,
+``test_c_parity.py`` compares every flag with the newly clipped pixels from
+``ftoolss.sigma_clip``, which calls the C median and standard-deviation kernels.
+The comparison covers detector dtypes, both window orientations and successive passes.
 
 Default window
 --------------
