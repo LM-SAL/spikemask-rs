@@ -39,7 +39,7 @@ classifiers = [
 ]
 
 [project.urls]
-# Add Documentation once Read the Docs hosts the docs.
+Documentation = "https://spikemask-rs.readthedocs.io"
 Source = "https://github.com/LM-SAL/spikemask-rs"
 Issues = "https://github.com/LM-SAL/spikemask-rs/issues"
 Changelog = "https://github.com/LM-SAL/spikemask-rs/blob/main/CHANGELOG.rst"
