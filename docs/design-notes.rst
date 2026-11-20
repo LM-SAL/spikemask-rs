@@ -70,15 +70,15 @@ Both paths use the same detection rule.
 Measured throughput
 -------------------
 
-On a Ryzen 9 9950X with a pool reused across 41 calls, the 328 by 1,024
-MUSE demo exposure took 5.09 ms with one worker and 1.15 ms with 16 workers
-(median, float32 input). Rounding that exposure to int32 gave 5.00 ms and
-1.08 ms respectively. Both masks matched ``ftoolss`` on the corresponding
-input. The timings include preparing the clipping buffer and allocating the mask.
-An earlier comparison on the float64 demo found 28.7 ms for stock ``rsliding``
-at revision ``68f28a8b`` with 32 workers and 153 ms for ``ftoolss`` 6.1.21
-(medians of seven warm calls). Runtime depends on the window, image size,
-density of hits and CPU.
+On a Ryzen 9 9950X with a reused pool, mocked int32 Level 1 frames took 14 ms
+(1,024 by 1,024, SG) and 94 ms (2,048 by 4,096, CI) with one worker, and 1.9 ms
+and 12 ms with 16 (medians). The IDL demo's settings took 7.1 ms and 56 ms with one
+worker. ``ftoolss`` 6.1.21 took 1.2 s and 6.2 s at the defaults, and 240 ms and
+1.9 s at the demo's settings. Masks matched ``ftoolss`` at both settings. The
+timings include preparing the clipping buffer and allocating the mask. An earlier
+comparison on the float64 demo exposure found 28.7 ms for stock ``rsliding`` at
+revision ``68f28a8b`` with 32 workers and 153 ms for ``ftoolss`` (medians of seven
+warm calls). Runtime depends on the window, image size, density of hits and CPU.
 
 Worker pools
 ------------
