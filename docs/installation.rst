@@ -1,11 +1,14 @@
 Installation
 ============
 
-From the project root, build and install the Python extension with::
+Install the released package with::
+
+    python -m pip install spikes-rs
+
+Python needs version 3.12 or later and NumPy 2.0 or later. To build from a checkout instead,
+which needs Rust 1.99 or later, run from the project root::
 
     python -m pip install .
-
-Source builds need Rust 1.99 or later. Python needs version 3.12 or later and NumPy 2.0 or later.
 
 Development
 -----------
