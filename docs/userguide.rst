@@ -36,6 +36,9 @@ use four workers and one worker respectively.
 >>> np.testing.assert_array_equal(mask, single_worker_mask)
 
 Leaving the block restores the previous setting. Each package manages its own pool.
+A thread started inside the block inherits the setting only where Python copies the
+context into new threads, the default on free-threaded builds; elsewhere, pass
+``workers=`` or enter the block in that thread.
 If stages run concurrently, budget workers across the active pools. For a stage running
 in another process, enter the context in that process. Start it with ``spawn`` or
 ``forkserver``: a call in a process forked after the first call never returns.
