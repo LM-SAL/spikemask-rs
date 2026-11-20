@@ -5,7 +5,7 @@ A flag identifies a suspected hit at the same row and column as the original mea
 
 >>> import numpy as np
 >>> from spikes_rs import spike_mask
->>> image = np.full((20, 30), 100.0)
+>>> image = np.full((20, 30), 100.0, dtype=np.float32)
 >>> image[10, 15] = 10_000
 >>> image[1, 1] = np.nan
 >>> mask = spike_mask(image)
@@ -18,15 +18,27 @@ Use ``window=(rows, columns)`` to change the local neighborhood. Both sizes must
 positive and odd. Edges use only the available pixels. Each pass recomputes local
 statistics after excluding newly flagged pixels, which can reveal a weaker adjacent hit.
 
+.. _stage-worker-counts:
+
 Stage worker counts
 -------------------
 
-Use a positive ``workers`` argument on ``spike_mask`` for one call.
-For repeated calls, create the pool once in the stage that runs them::
+Pass a positive integer as ``workers=`` to :func:`~spikes_rs.spike_mask` for one call.
+For a stage with repeated calls, :func:`~spikes_rs.set_workers` lets them reuse one Rayon pool.
+An explicit count overrides the stage setting for that call. For example, these calls
+use four workers and one worker respectively.
 
-    from spikes_rs import spike_mask, set_workers
+>>> from spikes_rs import set_workers
+>>> with set_workers(4):
+...     mask = spike_mask(image)
+...     single_worker_mask = spike_mask(image, workers=1)
+>>> np.testing.assert_array_equal(mask, single_worker_mask)
 
-    with set_workers(4):
-        masks = [spike_mask(image) for image in exposures]
+Leaving the block restores the previous setting. Each package manages its own pool.
+If stages run concurrently, budget workers across the active pools. For a stage running
+in another process, enter the context in that process.
 
-The pool applies to ``spikes_rs`` calls made in that context.
+With ``workers=None`` (the default), a call uses the active context or falls back to
+Rayon's default pool. Set ``RAYON_NUM_THREADS`` before starting Python to configure
+that fallback, for example ``RAYON_NUM_THREADS=4 python pipeline.py``. When unset,
+Rayon chooses the default size from the available CPUs.
